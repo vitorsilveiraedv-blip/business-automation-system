@@ -1,0 +1,8 @@
+order_id,customer_email,amount,currency,status
+ORD-1001,alex.morgan@example.com,249.90,USD,paid
+ORD-1002,jamie.lee@example.com,89.50,USD,pending
+ORD-1003,invalid-email,120.00,USD,paid
+ORD-1004,sam.taylor@example.com,-15.00,USD,paid
+ORD-1005,alex.morgan@example.com,249.90,USD,paid
+ORD-1001,duplicate@example.com,35.00,USD,pending
+ORD-1006,casey.park@example.com,64.25,EUR,cancelled
