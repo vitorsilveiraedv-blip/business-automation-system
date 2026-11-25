@@ -14,6 +14,9 @@ Small businesses often receive operational data in spreadsheets and CSV exports.
 - Separate reports for accepted and rejected records
 - JSON processing summary
 - Command-line interface and structured logging
+- Optional JSON webhook integration for accepted orders
+- Bounded retries for temporary HTTP and network failures
+- Configurable request timeout and endpoint validation
 - Automated tests with pytest
 - GitHub Actions workflow for continuous integration
 
@@ -24,9 +27,11 @@ business-automation-system/
 ├── .github/workflows/tests.yml
 ├── data/sample_orders.csv
 ├── src/business_automation/
+│   ├── integrations.py
 │   ├── __init__.py
 │   ├── cli.py
 │   └── processor.py
+├── tests/test_integrations.py
 ├── tests/test_processor.py
 ├── .env.example
 ├── .gitignore
@@ -70,6 +75,9 @@ python -m pip install -e ".[dev]"
 
 ```bash
 business-automation data/sample_orders.csv --output-dir output --verbose
+
+# Optional: deliver accepted orders to an HTTP endpoint
+business-automation data/sample_orders.csv --webhook-url https://example.com/api/orders
 ```
 
 The command creates:
@@ -79,6 +87,12 @@ The command creates:
 - `summary.json`: totals and acceptance rate
 
 The sample data intentionally includes invalid and duplicate records so both processing paths can be inspected.
+
+## Webhook integration
+
+The optional `--webhook-url` flag sends each accepted order to an HTTP or HTTPS endpoint as a JSON `POST` request. The client uses a five-second timeout and retries temporary network failures and HTTP `429`, `500`, `502`, `503`, and `504` responses with exponential backoff. Other `4xx` responses fail immediately. No endpoint is contacted unless the flag is supplied.
+
+For local development, point the option at a test server or a webhook endpoint you control. Avoid placing API credentials in source code or committing secrets.
 
 ## Run tests
 
@@ -108,7 +122,7 @@ The CSV file must contain these columns:
 
 ## Scope and limitations
 
-This is a portfolio demonstration using local CSV files. It does not connect to a live payment provider, send customer messages, or modify a production database. API integrations can be added behind explicit interfaces in a future iteration.
+This is a portfolio demonstration using local CSV files and an optional generic webhook. It does not connect to a live payment provider, send customer messages, or modify a production database. The webhook endpoint must be supplied by the operator.
 
 ## License
 
